@@ -12,54 +12,68 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const initApp = async () => {
-      try {
-        // Get Telegram Web App
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-          const tg = window.Telegram.WebApp;
-          tg.ready();
+    let isMounted = true;
 
-          // Get user from Telegram
-          const telegramUser = tg.initDataUnsafe?.user;
-          
-          if (telegramUser) {
-            await handleLogin(telegramUser);
-          } else {
-            setError('Telegram user data not available');
-            setLoading(false);
-          }
-        } else {
-          setError('Telegram Web App not available');
+    const initApp = async () => {
+      // Wait for Telegram SDK
+      let attempts = 0;
+      while (!window.Telegram?.WebApp && attempts < 50) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+      }
+
+      if (!isMounted) return;
+
+      try {
+        const tg = window.Telegram?.WebApp;
+        
+        if (!tg) {
+          setError('Telegram Web App SDK not found');
+          setLoading(false);
+          return;
+        }
+
+        tg.ready();
+
+        const user = tg.initDataUnsafe?.user;
+        
+        if (!user) {
+          setError('Could not get Telegram user. Make sure you open this from Telegram app.');
+          setLoading(false);
+          return;
+        }
+
+        // Login
+        const response = await loginCreator(
+          String(user.id),
+          user.username || `user_${user.id}`
+        );
+        
+        if (!isMounted) return;
+        
+        setUser(response.data);
+
+        // Check admin
+        const adminRes = await checkIsAdmin(String(user.id));
+        setIsAdmin(adminRes.data.isAdmin);
+      } catch (err) {
+        console.error('Error:', err);
+        if (isMounted) {
+          setError('Error: ' + err.message);
+        }
+      } finally {
+        if (isMounted) {
           setLoading(false);
         }
-      } catch (err) {
-        console.error('Init error:', err);
-        setError('Failed to initialize');
-        setLoading(false);
       }
     };
 
     initApp();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-  const handleLogin = async (telegramUser) => {
-    try {
-      const response = await loginCreator(
-        String(telegramUser.id),
-        telegramUser.username || `user_${telegramUser.id}`
-      );
-      setUser(response.data);
-
-      // Check if admin
-      const adminCheck = await checkIsAdmin(String(telegramUser.id));
-      setIsAdmin(adminCheck.data.isAdmin);
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Login failed: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -72,13 +86,24 @@ export default function Home() {
     );
   }
 
-  if (error || !user) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Creator Campaign</h1>
-          <p className="text-red-400 mb-4">{error || 'Open this app from Telegram to continue'}</p>
-          <p className="text-gray-400">Make sure you open this from the Telegram app</p>
+          <p className="text-red-400 mb-2">{error}</p>
+          <p className="text-gray-400 text-sm">Open from Telegram app</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold mb-4">Creator Campaign</h1>
+          <p className="text-gray-400">Opening from Telegram...</p>
         </div>
       </div>
     );
