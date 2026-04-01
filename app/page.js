@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { initTelegram, getTelegramUser, showTelegramAlert } from '@/lib/telegram';
 import { loginCreator, checkIsAdmin } from '@/lib/api';
 import Dashboard from '@/components/Dashboard';
 import AdminPanel from '@/components/AdminPanel';
@@ -10,19 +9,37 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const tg = initTelegram();
-    if (tg) {
-      tg.ready();
-    }
+    const initApp = async () => {
+      try {
+        // Get Telegram Web App
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+          const tg = window.Telegram.WebApp;
+          tg.ready();
 
-    const telegramUser = getTelegramUser();
-    if (telegramUser) {
-      handleLogin(telegramUser);
-    } else {
-      setLoading(false);
-    }
+          // Get user from Telegram
+          const telegramUser = tg.initDataUnsafe?.user;
+          
+          if (telegramUser) {
+            await handleLogin(telegramUser);
+          } else {
+            setError('Telegram user data not available');
+            setLoading(false);
+          }
+        } else {
+          setError('Telegram Web App not available');
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Init error:', err);
+        setError('Failed to initialize');
+        setLoading(false);
+      }
+    };
+
+    initApp();
   }, []);
 
   const handleLogin = async (telegramUser) => {
@@ -38,7 +55,7 @@ export default function Home() {
       setIsAdmin(adminCheck.data.isAdmin);
     } catch (error) {
       console.error('Login error:', error);
-      showTelegramAlert('Login failed');
+      setError('Login failed: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -55,12 +72,13 @@ export default function Home() {
     );
   }
 
-  if (!user) {
+  if (error || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Creator Campaign</h1>
-          <p className="text-gray-400 mb-8">Open this app from Telegram to continue</p>
+          <p className="text-red-400 mb-4">{error || 'Open this app from Telegram to continue'}</p>
+          <p className="text-gray-400">Make sure you open this from the Telegram app</p>
         </div>
       </div>
     );
