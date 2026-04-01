@@ -14,11 +14,61 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #0f0f0f;
+  background: linear-gradient(135deg, #0f172a 0%, #1a472a 50%, #0f172a 100%);
   color: #ffffff;
+  min-height: 100vh;
+}
+
+/* Nexarium brand colors */
+:root {
+  --nexarium-green-dark: #1a472a;
+  --nexarium-green-light: #2d6a4f;
+  --nexarium-green-accent: #52b788;
+  --nexarium-silver: #c0c0c0;
+  --nexarium-silver-light: #e8e8e8;
+}
+
+/* Gradient backgrounds */
+.bg-nexarium-gradient {
+  background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 50%, #1a472a 100%);
+}
+
+.bg-nexarium-silver-gradient {
+  background: linear-gradient(135deg, #2d6a4f 0%, #c0c0c0 100%);
+}
+
+/* Text gradients */
+.text-nexarium-gradient {
+  background: linear-gradient(135deg, #52b788 0%, #c0c0c0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 71, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #52b788;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #74c69d;
 }

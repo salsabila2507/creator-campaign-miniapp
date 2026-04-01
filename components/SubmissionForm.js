@@ -31,7 +31,6 @@ export default function SubmissionForm({ user, setUser }) {
     try {
       await submitContent(user.telegram_id, formData);
 
-      // Refresh user data to update points
       const updatedUser = await getCreatorProfile(user.telegram_id);
       setUser(updatedUser.data);
 
@@ -42,79 +41,81 @@ export default function SubmissionForm({ user, setUser }) {
         telegram_link: '',
       });
 
-      showTelegramAlert('Content submitted successfully! Waiting for admin review...');
+      showTelegramAlert('✅ Content submitted! Waiting for admin review...');
     } catch (error) {
       console.error('Error submitting content:', error);
-      showTelegramAlert('Failed to submit content');
+      showTelegramAlert('❌ Failed to submit content');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-      <h2 className="text-2xl font-bold mb-2">Submit Content</h2>
-      <p className="text-gray-400 mb-6">
-        X/TikTok: 100 points | Instagram: +50% | Telegram: +30%
+    <div className="bg-green-950 rounded-lg p-6 border-2 border-green-700 shadow-lg">
+      <h2 className="text-2xl font-bold text-green-300 mb-2">🚀 Submit Content</h2>
+      <p className="text-green-400 mb-6">
+        <span className="font-semibold">X/TikTok:</span> 100 pts | 
+        <span className="font-semibold"> Instagram:</span> +50% | 
+        <span className="font-semibold"> Telegram:</span> +30%
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-2">X (Twitter) Link *</label>
+          <label className="block text-sm font-medium text-green-300 mb-2">X (Twitter) Link *</label>
           <input
             type="url"
             name="x_link"
             value={formData.x_link}
             onChange={handleChange}
             placeholder="https://x.com/..."
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-green-900 border-2 border-green-700 rounded-lg text-white placeholder-green-600 focus:outline-none focus:border-green-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">TikTok Link *</label>
+          <label className="block text-sm font-medium text-green-300 mb-2">TikTok Link *</label>
           <input
             type="url"
             name="tiktok_link"
             value={formData.tiktok_link}
             onChange={handleChange}
             placeholder="https://www.tiktok.com/..."
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-green-900 border-2 border-green-700 rounded-lg text-white placeholder-green-600 focus:outline-none focus:border-green-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Instagram Link (bonus)</label>
+          <label className="block text-sm font-medium text-green-300 mb-2">Instagram Link (bonus +50%)</label>
           <input
             type="url"
             name="instagram_link"
             value={formData.instagram_link}
             onChange={handleChange}
             placeholder="https://instagram.com/..."
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-green-900 border-2 border-green-700 rounded-lg text-white placeholder-green-600 focus:outline-none focus:border-green-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Telegram Link (bonus)</label>
+          <label className="block text-sm font-medium text-green-300 mb-2">Telegram Link (bonus +30%)</label>
           <input
             type="url"
             name="telegram_link"
             value={formData.telegram_link}
             onChange={handleChange}
             placeholder="https://t.me/..."
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 bg-green-900 border-2 border-green-700 rounded-lg text-white placeholder-green-600 focus:outline-none focus:border-green-500"
           />
         </div>
 
-        <p className="text-sm text-gray-400">* At least X or TikTok required</p>
+        <p className="text-sm text-green-400">* At least X or TikTok required</p>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-lg transition-colors mt-6"
+          className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-6"
         >
-          {loading ? 'Submitting...' : 'Submit Content'}
+          {loading ? '⏳ Submitting...' : '🚀 Submit Content'}
         </button>
       </form>
     </div>
