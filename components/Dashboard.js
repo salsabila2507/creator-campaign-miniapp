@@ -16,7 +16,7 @@ export default function Dashboard({ user, setUser }) {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-2xl font-bold text-green-800">⬡</span>
+              <img src="/logo.jpg" alt="Nexarium" className="w-16 h-16 object-contain" />
             </div>
             <div>
               <h1 className="text-4xl font-black text-white drop-shadow-lg">NEXARIUM</h1>
